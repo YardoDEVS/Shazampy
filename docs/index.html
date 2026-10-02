@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shazampy — Documentation</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#0b0d10; --panel:#12161b; --panel2:#171d24; --text:#e8edf2;
+  --muted:#9ca8b5; --accent:#68d5ff; --accent2:#a88bff; --ok:#6ee7a8;
+  --warn:#ffc96b; --border:#27303a; --code:#0a0c0f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1120px;margin:auto;padding:42px 24px 80px}
+header{padding:44px;border:1px solid var(--border);border-radius:22px;background:linear-gradient(135deg,#111922,#161327)}
+h1{font-size:clamp(2.4rem,7vw,5.4rem);line-height:.95;margin:0 0 18px;letter-spacing:-.05em}
+.tag{color:var(--accent);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.84rem}
+.lead{font-size:1.2rem;max-width:760px;color:#c6d0da}
+.badges{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
+.badge{border:1px solid var(--border);background:#0c1117;border-radius:999px;padding:6px 11px;color:#c9d4df;font-size:.84rem}
+section{margin-top:42px;padding:28px;border:1px solid var(--border);border-radius:18px;background:var(--panel)}
+h2{margin-top:0;font-size:1.65rem}
+h3{margin-top:30px}
+a{color:var(--accent)}
+code{font-family:"SFMono-Regular",Consolas,monospace;background:#0a0d11;padding:.15em .38em;border-radius:5px}
+pre{overflow:auto;background:var(--code);border:1px solid var(--border);border-radius:12px;padding:16px}
+pre code{padding:0;background:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:18px}
+.card strong{display:block;margin-bottom:5px;color:#fff}
+table{width:100%;border-collapse:collapse;display:block;overflow-x:auto}
+th,td{text-align:left;border-bottom:1px solid var(--border);padding:11px 13px;white-space:nowrap}
+th{color:var(--accent)}
+.note{border-left:4px solid var(--warn);background:#1b1710;padding:14px 17px;border-radius:0 10px 10px 0}
+.good{border-left-color:var(--ok);background:#0d1915}
+.license{border-left:4px solid var(--accent2);background:#151221;padding:18px}
+kbd{border:1px solid #485361;border-bottom-width:3px;border-radius:5px;background:#202733;padding:2px 7px;font:inherit;font-weight:700}
+
+.support-box{
+  margin-top:18px;
+  padding:24px;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:linear-gradient(135deg,#18140d,#16131f);
+  text-align:center;
+}
+.coffee-button{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin-top:12px;
+  padding:12px 18px;
+  border-radius:999px;
+  background:#ffd166;
+  color:#17120a;
+  font-weight:800;
+  text-decoration:none;
+  border:1px solid #e6b94f;
+  box-shadow:0 8px 24px rgba(0,0,0,.24);
+}
+.coffee-button:hover{filter:brightness(1.05);text-decoration:none}
+
+footer{margin-top:42px;text-align:center;color:var(--muted);font-size:.9rem}
+.small{font-size:.9rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="tag">Linux · Python · Song recognition · synchronized lyrics</div>
+  <h1>Shazampy</h1>
+  <p class="lead">A desktop lyrics companion for Linux that continuously identifies the song being heard or played by the computer, retrieves synchronized lyrics, follows the current position, and displays a responsive seven-line lyric view with a live frequency spectrum.</p>
+  <div class="badges">
+    <span class="badge">Author: Gerardo García Alfaro</span>
+    <span class="badge">Python 3</span>
+    <span class="badge">CC BY-NC 4.0</span>
+    <span class="badge">Linux</span>
+    <span class="badge">Source available</span>
+    <span class="badge">☕ Support development</span>
+  </div>
+</header>
+
+<section>
+<h2>Overview</h2>
+<p>Shazampy continuously captures audio from a selectable source, builds rolling audio windows, identifies the track and its timeline position, retrieves synchronized LRC lyrics from LRCLIB, and keeps the currently playing lyric centered in a seven-line display. Linux uses FFmpeg + PulseAudio/PipeWire + SongRec; Windows x64 uses PyAudioWPatch/WASAPI + ShazamIO.</p>
+<p>It can listen to a physical microphone or to a PulseAudio/PipeWire monitor source, which makes it possible to follow music that is being played directly by the computer. Its synchronization logic groups Shazam matches into temporal clusters and tracks coherent branches so repeated choruses or repeated song sections are less likely to send the lyric clock to the wrong part of a song.</p>
+
+<div class="grid">
+  <div class="card"><strong>7-line lyric view</strong>Three previous lines, the current line, and three upcoming lines.</div>
+  <div class="card"><strong>Multiple audio inputs</strong>Cycle through microphones, onboard audio monitors, USB devices, Bluetooth sources and HDMI/DisplayPort audio.</div>
+  <div class="card"><strong>Branch-aware synchronization</strong>Tracks clusters of recognition positions instead of trusting a single ambiguous match.</div>
+  <div class="card"><strong>Live spectrum analyzer</strong>48 logarithmically distributed frequency bars across the captured 16 kHz audio signal.</div>
+  <div class="card"><strong>Responsive UI</strong>Lyrics, status fields and controls reorganize when the window is resized or maximized.</div>
+  <div class="card"><strong>Seven interface languages</strong>English, Spanish, Portuguese, French, Italian, German and Arabic.</div>
+<div class="card"><strong>World-script lyrics</strong>Noto-based font selection provides broad Unicode coverage for Korean, Japanese, Chinese, Arabic, Indic scripts and many more.</div>
+<div class="card"><strong>Windows x64 build</strong>Windows 7, 10 and 11 use the dedicated <code>Shazampy_Win.py</code> build with WASAPI loopback capture.</div>
+</div>
+</section>
+
+<section>
+<h2>Requirements</h2>
+<p>The application uses Python and standard Linux audio tooling. The installer supplied with the project attempts to install everything automatically on supported distributions.</p>
+<table>
+<thead><tr><th>Component</th><th>Purpose</th><th>Required?</th></tr></thead>
+<tbody>
+<tr><td>Python 3</td><td>Runs Shazampy</td><td>Yes</td></tr>
+<tr><td>Tkinter</td><td>Graphical interface</td><td>Yes</td></tr>
+<tr><td>requests</td><td>LRCLIB and iTunes HTTP requests</td><td>Yes</td></tr>
+<tr><td>FFmpeg</td><td>Continuous PulseAudio/PipeWire audio capture</td><td>Linux only</td></tr>
+<tr><td>SongRec</td><td>Shazam-compatible recognition and match offsets</td><td>Linux only</td></tr>
+<tr><td><code>pactl</code></td><td>Discovers physical inputs and output monitor sources</td><td>Linux only</td></tr>
+<tr><td>PipeWire-Pulse or PulseAudio</td><td>PulseAudio-compatible audio routing</td><td>Linux only</td></tr>
+<tr><td>playerctl</td><td>Optional Spotify/MPRIS synchronization diagnostics</td><td>Optional, Linux</td></tr>
+<tr><td>Noto fonts</td><td>Broad multilingual/Unicode lyric rendering</td><td>Recommended / installed automatically</td></tr>
+<tr><td>PyAudioWPatch</td><td>Windows WASAPI microphone and speaker-loopback capture</td><td>Windows only</td></tr>
+<tr><td>ShazamIO</td><td>Song recognition used by the Windows build</td><td>Windows only</td></tr>
+</tbody>
+</table>
+<p class="small">The spectrum analyzer does not require NumPy. It uses the same PCM stream that Shazampy already captures.</p>
+</section>
+
+<section>
+<h2>Installation</h2>
+<p>The repository includes one cross-platform installer. Open a terminal or command prompt in the folder where you want Shazampy installed and run:</p>
+<pre><code>python3 install_shazampy.py</code></pre>
+<p>On Windows, <code>python install_shazampy.py</code> is also valid. The installer detects the operating system automatically.</p>
+<div class="grid">
+  <div class="card"><strong>Linux</strong>Installs <code>shazampy.py</code>, SongRec, FFmpeg/PulseAudio-compatible tooling and the Noto font packages available in the distribution.</div>
+  <div class="card"><strong>Windows x64</strong>Installs <code>Shazampy_Win.py</code>, PyAudioWPatch, ShazamIO and a private Noto font set beside the application. A <code>run_shazampy.bat</code> launcher is created.</div>
+</div>
+<p>Useful options:</p>
+<pre><code>python3 install_shazampy.py --help
+python3 install_shazampy.py --yes
+python3 install_shazampy.py --dest ~/Applications/Shazampy
+python3 install_shazampy.py --force
+python3 install_shazampy.py --dry-run
+python3 install_shazampy.py --skip-packages
+python3 install_shazampy.py --skip-fonts</code></pre>
+<div class="note"><strong>Windows 7:</strong> use Python 3.8.10 x64. It was the last CPython release with an official Windows 7 installer. Windows 7 and Python 3.8 are end-of-life, so this compatibility profile is intended only for legacy machines.</div>
+</section>
+
+<section>
+<h2>Running Shazampy</h2>
+<h3>Linux</h3>
+<pre><code>./shazampy.py</code></pre>
+<h3>Windows</h3>
+<p>Double-click <code>run_shazampy.bat</code>, or run:</p>
+<pre><code>python Shazampy_Win.py</code></pre>
+<p>The first recognition starts after the rolling audio buffer has collected enough audio. On Linux, direct computer audio normally uses a source ending in <code>.monitor</code>. On Windows, press <kbd>F</kbd> until a <strong>WASAPI LOOPBACK</strong> source for the desired speakers/headphones is selected.</p>
+</section>
+
+<section>
+<h2>Keyboard controls</h2>
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td><kbd>A</kbd></td><td>Previous interface language</td></tr>
+<tr><td><kbd>D</kbd></td><td>Next interface language</td></tr>
+<tr><td><kbd>F</kbd></td><td>Cycle through available audio capture sources</td></tr>
+<tr><td><kbd>W</kbd> or <kbd>→</kbd></td><td>Move lyric timing forward by 0.25 seconds</td></tr>
+<tr><td><kbd>S</kbd> or <kbd>←</kbd></td><td>Move lyric timing backward by 0.25 seconds</td></tr>
+<tr><td><kbd>↑</kbd></td><td>Move lyric timing forward by 1 second</td></tr>
+<tr><td><kbd>↓</kbd></td><td>Move lyric timing backward by 1 second</td></tr>
+<tr><td><kbd>Space</kbd></td><td>Restart the listening session from a completely fresh audio buffer while keeping the selected input and language</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>Close Shazampy</td></tr>
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>Audio inputs</h2>
+<p>Press <kbd>F</kbd> to refresh and cycle through the sources exposed by <code>pactl</code>. Shazampy distinguishes physical inputs from output monitors and attempts to classify onboard PCI audio, USB audio, Bluetooth audio and HDMI/DisplayPort devices.</p>
+<pre><code>pactl list short sources</code></pre>
+<p>A typical direct-output monitor looks like:</p>
+<pre><code>alsa_output.pci-0000_00_0e.0.analog-stereo.monitor</code></pre>
+<p>A typical physical microphone/input looks like:</p>
+<pre><code>alsa_input.pci-0000_00_0e.0.analog-stereo</code></pre>
+</section>
+
+<section>
+<h2>Synchronization model</h2>
+<p>Recognition services may return more than one plausible position when a song contains repeated sections. Shazampy therefore does not simply select the nearest or largest offset. It groups candidate positions into nearby clusters, scores the support of each cluster, tracks coherent movement over successive recognitions and can relocate the active timeline when a new remote branch is confirmed repeatedly.</p>
+<p>This approach is designed for difficult cases such as songs whose introduction repeats material heard again near the end. Manual timing controls remain available for LRC files whose own timestamps differ slightly from the master recording used for recognition.</p>
+</section>
+
+
+<section id="unicode">
+<h2>Multilingual and Unicode lyrics</h2>
+<p>Shazampy stores and processes lyrics as Unicode text and normalizes LRC lyric lines to NFC. The installer adds the Noto family so Tk can render a very broad range of modern writing systems, including Japanese, Korean, Chinese, Arabic, Hebrew, Indic scripts, Thai, Georgian, Armenian, Ethiopic and many others.</p>
+<p>On Windows, the installer downloads Noto fonts beside Shazampy and the application registers them privately at startup, so administrator access is not required for the fonts. On Linux, the installer uses the distribution's Noto packages.</p>
+<div class="note"><strong>Unicode reality check:</strong> no single font stack can promise a glyph for every assigned or historical Unicode code point. Shazampy aims for broad modern-language coverage and falls back to the operating system's fonts when a dedicated Noto face is unavailable.</div>
+</section>
+
+<section>
+<h2>Frequency spectrum</h2>
+<p>The spectrum panel sits below the keyboard instructions and spans the available width. It uses 48 logarithmically spaced bars. Because Shazampy captures at 16 kHz, the theoretical Nyquist limit is 8 kHz; the analyzer intentionally stops slightly below that limit.</p>
+<p>The visual groups cover sub/bass, low-mid, mid, high-mid and treble regions. The analyzer is a visualization of the selected audio input; it is independent of the Shazam recognition decision.</p>
+</section>
+
+<section>
+<h2>Configuration and generated files</h2>
+<p>Per-song timing adjustments and debugging data are stored under:</p>
+<pre><code>~/.config/shazampy/</code></pre>
+<p>Current debug builds may create <code>debug-sync.log</code>. Spotify position data obtained through <code>playerctl</code> is used only as an optional diagnostic reference and is not required to choose the synchronization branch.</p>
+</section>
+
+
+<section id="acknowledgements">
+<h2>Third-party projects and acknowledgements</h2>
+<p>Shazampy is an independent project. It uses, invokes or interoperates with the following projects. Each retains its own copyright, license, trademarks and terms.</p>
+<div class="grid">
+  <div class="card"><strong>SongRec</strong>Created by <a href="https://github.com/marin-m">Marin (@marin-m)</a>. Project: <a href="https://github.com/marin-m/SongRec">SongRec on GitHub</a>. Shazampy invokes it for song recognition. Upstream license: GPL v3.</div>
+  <div class="card"><strong>LRCLIB</strong>Created by <a href="https://github.com/tranxuanthang">Trần Xuân Thắng (@tranxuanthang)</a>. Project: <a href="https://github.com/tranxuanthang/lrclib">LRCLIB on GitHub</a>. Used for synchronized-lyrics lookup. Server code: MIT license.</div>
+  <div class="card"><strong>Requests</strong>Created by <a href="https://github.com/kennethreitz">Kenneth Reitz</a>. Project: <a href="https://github.com/psf/requests">psf/requests</a>. Used for HTTP requests. Apache-2.0.</div>
+  <div class="card"><strong>PipeWire</strong>Created by <a href="https://pipewire.org/">Wim Taymans</a>. Project: <a href="https://pipewire.org/">pipewire.org</a>. Used by many Linux systems as the audio graph and PulseAudio-compatible backend.</div>
+  <div class="card"><strong>Python</strong>Created by <a href="https://www.python.org/">Guido van Rossum</a> and stewarded by the <a href="https://www.python.org/psf/">Python Software Foundation</a>. Runtime and standard library.</div>
+  <div class="card"><strong>FFmpeg</strong><a href="https://ffmpeg.org/">FFmpeg project</a>. Used for continuous audio capture/resampling.</div>
+  <div class="card"><strong>Playerctl</strong><a href="https://github.com/altdesktop/playerctl">altdesktop/playerctl</a>. Optional MPRIS/Spotify diagnostics. LGPL.</div>
+  <div class="card"><strong>Noto Emoji</strong><a href="https://github.com/googlefonts/noto-emoji">Google Fonts Noto Emoji</a>. Optional emoji rendering. Font files use SIL OFL 1.1.</div>
+  <div class="card"><strong>PulseAudio / pactl</strong><a href="https://www.freedesktop.org/wiki/Software/PulseAudio/">PulseAudio project</a>. Shazampy uses <code>pactl</code>-compatible source discovery.</div>
+
+  <div class="card"><strong>ShazamIO</strong>Created/maintained by <a href="https://github.com/shazamio">dotX12 and contributors</a>. Project: <a href="https://github.com/shazamio/ShazamIO">ShazamIO</a>. Used by the Windows build for recognition. MIT license.</div>
+  <div class="card"><strong>PyAudioWPatch</strong>Maintained by <a href="https://github.com/s0d3s">s0d3s</a>. Project: <a href="https://github.com/s0d3s/PyAudioWPatch">PyAudioWPatch</a>. Used for Windows WASAPI loopback capture. MIT license.</div>
+
+</div>
+<p class="small">Lyrics returned by a lyrics service can be subject to separate rights belonging to songwriters, publishers or other rights holders. Shazampy does not claim ownership of third-party lyrics.</p>
+<p>More detail is available in <a href="../THIRD_PARTY.md">THIRD_PARTY.md</a>.</p>
+</section>
+
+
+
+<section id="support">
+<h2>Support Shazampy</h2>
+<div class="support-box">
+  <p>If Shazampy is useful to you and you would like to support its development, you can send a voluntary contribution through PayPal.</p>
+  <a class="coffee-button"
+     href="https://paypal.me/produccionesyardo"
+     target="_blank"
+     rel="noopener noreferrer"
+     aria-label="Support Shazampy via PayPal">
+     ☕ Buy me a coffee via PayPal
+  </a>
+  
+</div>
+</section>
+
+<section>
+<h2>License and attribution</h2>
+<div class="license">
+<p><strong>Copyright © 2026 Gerardo García Alfaro.</strong></p>
+<p>Shazampy is licensed under the <strong>Creative Commons Attribution-NonCommercial 4.0 International license (CC BY-NC 4.0)</strong>.</p>
+<p>You may copy, share, modify, remix and build upon Shazampy for <strong>non-commercial purposes</strong>, provided that you give appropriate credit to the original author, <strong>Gerardo García Alfaro</strong>, provide a link to the license, and indicate if you changed the work.</p>
+<p>Commercial use is not permitted under this license. A commercial project would require separate permission from the author.</p>
+<p>Official license: <a href="https://creativecommons.org/licenses/by-nc/4.0/">https://creativecommons.org/licenses/by-nc/4.0/</a></p>
+</div>
+
+<h3>Suggested attribution</h3>
+<pre><code>Shazampy — originally created by Gerardo García Alfaro
+Licensed under CC BY-NC 4.0
+https://creativecommons.org/licenses/by-nc/4.0/
+Modified by: [your name / project], [describe changes if applicable]</code></pre>
+
+<div class="note">
+<strong>Terminology note:</strong> the complete source code is publicly available and modification is allowed, but CC BY-NC 4.0 prohibits commercial use. Because of that non-commercial restriction, this license is not an OSI-approved open-source software license. “Source-available” is the more precise software-licensing term.
+</div>
+</section>
+
+<section>
+<h2>Contributing and modifying</h2>
+<p>Non-commercial forks and modifications are welcome under CC BY-NC 4.0. Keep the original attribution to Gerardo García Alfaro, clearly identify your changes, and retain a link to the license. If you distribute a modified copy, do not imply that the original author endorses your fork or its changes.</p>
+</section>
+
+<section>
+<h2>Troubleshooting</h2>
+<div class="grid">
+  <div class="card"><strong>No microphone appears</strong>Run <code>pactl list short sources</code>. Verify that the sound card is using a duplex/input-capable profile.</div>
+  <div class="card"><strong>No monitor source appears on Linux</strong>Verify that a PulseAudio-compatible server such as PipeWire-Pulse is active and that the output sink exists.</div>
+  <div class="card"><strong>No WASAPI LOOPBACK source appears on Windows</strong>Run <code>python -m pyaudiowpatch</code> to inspect WASAPI devices, then restart Shazampy and press <kbd>F</kbd> to refresh the list.</div>
+  <div class="card"><strong>SongRec is missing</strong>Run the installer again without <code>--skip-packages</code>, or install SongRec natively for your distribution.</div>
+  <div class="card"><strong>Empty-square icons</strong>Install Noto Color Emoji. Shazampy also includes text fallbacks when a usable emoji font is unavailable.</div>
+  <div class="card"><strong>Lyrics slightly early/late</strong>Use <kbd>W</kbd>/<kbd>S</kbd>, arrow keys, or the ±1 second controls. Per-song corrections are saved.</div>
+  <div class="card"><strong>Changed song manually</strong>Press <kbd>Space</kbd> to clear the capture window and restart recognition from scratch.</div>
+</div>
+</section>
+
+
+<section id="windows-last">
+<h2>Si sigues encerrado en Windows...</h2>
+<p>Shazampy includes a dedicated Windows x64 build. Follow these steps:</p>
+<ol>
+  <li><strong>Windows 10 or 11 x64:</strong> install a 64-bit CPython version from 3.8 through 3.12 and make sure Python is available from the command prompt.</li>
+  <li><strong>Windows 7 x64:</strong> install <strong>Python 3.8.10 x64</strong>. Newer CPython versions do not officially support Windows 7. Windows 7 and Python 3.8 are end-of-life, so do not treat this as a secure modern desktop configuration.</li>
+  <li>Download or clone the Shazampy repository.</li>
+  <li>Open <strong>Command Prompt</strong> in the Shazampy folder and run <code>python install_shazampy.py</code>.</li>
+  <li>The installer automatically detects Windows, installs the pinned Windows dependencies, downloads broad Noto font coverage, writes <code>Shazampy_Win.py</code> and creates <code>run_shazampy.bat</code>.</li>
+  <li>Launch Shazampy by double-clicking <code>run_shazampy.bat</code>.</li>
+  <li>Press <kbd>F</kbd> to cycle audio devices. To capture the sound currently playing through speakers or headphones, choose the corresponding <strong>WASAPI LOOPBACK</strong> device.</li>
+  <li>If Windows asks for network permission, allow Python/Shazampy to access the network so recognition and synchronized-lyrics services can be reached.</li>
+</ol>
+<p>The Windows build uses <a href="https://github.com/s0d3s/PyAudioWPatch">PyAudioWPatch</a> for WASAPI capture and <a href="https://github.com/shazamio/ShazamIO">ShazamIO</a> for song recognition instead of Linux's PipeWire/PulseAudio + SongRec path.</p>
+</section>
+
+<footer>
+Shazampy · Gerardo García Alfaro · 2026 · CC BY-NC 4.0
+</footer>
+</main>
+</body>
+</html>
