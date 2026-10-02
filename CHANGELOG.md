@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1 — Installer clone-directory fix
+
+- Fixed the installer aborting when run directly inside a cloned repository where `shazampy.py` or `Shazampy_Win.py` already exists.
+- Identical source files are now kept and installation continues normally.
+- Different existing files are preserved unless `--force` is explicitly requested.
+
 ## 1.1.0 — Multilingual + Windows release
 
 - Added clickable PayPal.Me support line in every interface language.

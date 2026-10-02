@@ -971,32 +971,85 @@ def install_windows_fonts(dest_dir, dry_run):
 
 def write_linux_app(dest_dir, force, dry_run):
     target = dest_dir / LINUX_FILENAME
-    if target.exists() and not force:
-        fail(str(target) + " already exists. Re-run with --force to overwrite it.")
-    info("Installing Linux Shazampy to " + str(target))
+    payload = decode_payload(LINUX_PAYLOAD_B64)
+
+    if target.exists():
+        try:
+            existing = target.read_bytes()
+        except OSError:
+            existing = None
+
+        if existing == payload:
+            info("Shazampy source is already present in the destination; keeping it.")
+        elif force:
+            info("Replacing existing Linux Shazampy because --force was requested.")
+            if not dry_run:
+                target.write_bytes(payload)
+        else:
+            warn(
+                str(target)
+                + " already exists and differs from the embedded copy; "
+                + "leaving it untouched. Use --force only if you want to replace it."
+            )
+    else:
+        info("Installing Linux Shazampy to " + str(target))
+        if not dry_run:
+            target.write_bytes(payload)
+
     if not dry_run:
-        target.write_bytes(decode_payload(LINUX_PAYLOAD_B64))
-        target.chmod(0o755)
+        try:
+            target.chmod(0o755)
+        except OSError as exc:
+            warn("Could not mark shazampy.py as executable: " + str(exc))
+
         launcher = dest_dir / "shazampy"
         try:
-            if launcher.exists() or launcher.is_symlink():
-                if force:
+            if launcher.is_symlink():
+                if launcher.resolve(strict=False) != target.resolve(strict=False):
                     launcher.unlink()
-                else:
-                    return target
-            launcher.symlink_to(LINUX_FILENAME)
+                    launcher.symlink_to(LINUX_FILENAME)
+            elif launcher.exists():
+                warn(
+                    "A file named 'shazampy' already exists; "
+                    "the convenience symlink was not changed."
+                )
+            else:
+                launcher.symlink_to(LINUX_FILENAME)
+                ok("Created launcher: " + str(launcher))
         except OSError as exc:
             warn("Could not create convenience symlink: " + str(exc))
+
     return target
 
 
 def write_windows_app(dest_dir, force, dry_run):
     target = dest_dir / WINDOWS_FILENAME
-    if target.exists() and not force:
-        fail(str(target) + " already exists. Re-run with --force to overwrite it.")
-    info("Installing Windows Shazampy to " + str(target))
+    payload = decode_payload(WINDOWS_PAYLOAD_B64)
+
+    if target.exists():
+        try:
+            existing = target.read_bytes()
+        except OSError:
+            existing = None
+
+        if existing == payload:
+            info("Shazampy_Win.py is already present in the destination; keeping it.")
+        elif force:
+            info("Replacing existing Windows Shazampy because --force was requested.")
+            if not dry_run:
+                target.write_bytes(payload)
+        else:
+            warn(
+                str(target)
+                + " already exists and differs from the embedded copy; "
+                + "leaving it untouched. Use --force only if you want to replace it."
+            )
+    else:
+        info("Installing Windows Shazampy to " + str(target))
+        if not dry_run:
+            target.write_bytes(payload)
+
     if not dry_run:
-        target.write_bytes(decode_payload(WINDOWS_PAYLOAD_B64))
         bat = dest_dir / "run_shazampy.bat"
         python_exe = sys.executable
         bat.write_text(
@@ -1004,6 +1057,7 @@ def write_windows_app(dest_dir, force, dry_run):
             encoding="utf-8",
         )
         ok("Created Windows launcher: " + str(bat))
+
     return target
 
 
