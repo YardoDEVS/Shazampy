@@ -1,10 +1,16 @@
 # Changelog
 
+## 1.1.2 — Donation browser focus fix
+
+- Clicking the donation link now minimizes Shazampy before opening PayPal so the default browser receives the foreground view.
+- Linux now opens donation links with the desktop default URL handler (`xdg-open`), with Python browser fallback.
+- Windows now opens donation links with the system URL handler (`os.startfile`), with Python browser fallback.
+- Shazampy restores its always-on-top behaviour when the user returns to the application.
+
 ## 1.1.1 — Installer clone-directory fix
 
-- Fixed the installer aborting when run directly inside a cloned repository where `shazampy.py` or `Shazampy_Win.py` already exists.
-- Identical source files are now kept and installation continues normally.
-- Different existing files are preserved unless `--force` is explicitly requested.
+- Running `install_shazampy.py` from a cloned repository no longer aborts merely because the platform source file already exists.
+- An identical source file is kept; a different source file is preserved unless `--force` is explicitly requested.
 
 ## 1.1.0 — Multilingual + Windows release
 

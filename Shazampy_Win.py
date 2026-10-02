@@ -407,6 +407,8 @@ class ShazamPy:
         self.root = tk.Tk()
         self.root.title(APP_TITLE)
         self.root.attributes("-topmost", True)
+        self._restore_topmost_on_map = False
+        self.root.bind("<Map>", self._on_root_mapped, add="+")
         self.root.geometry(f"{BASE_WIDTH}x{BASE_HEIGHT}+380+260")
         self.root.minsize(760, 470)
         self.root.configure(bg="#101010")
@@ -575,7 +577,7 @@ class ShazamPy:
         self.donation_label.pack(fill="x", pady=(2, 0))
         self.donation_label.bind(
             "<Button-1>",
-            lambda event: webbrowser.open_new_tab(PAYPAL_URL),
+            self.open_donation_page,
         )
 
         # Full-width frequency spectrum at the very bottom of the window.
@@ -609,6 +611,34 @@ class ShazamPy:
         threading.Thread(target=self.snapshot_loop, daemon=True).start()
         threading.Thread(target=self.recognition_loop, daemon=True).start()
         self.root.after(UI_UPDATE_MS, self.update)
+
+    def _on_root_mapped(self, event=None):
+        """Restore the floating/topmost behaviour when Shazampy is reopened."""
+        if not self._restore_topmost_on_map:
+            return
+        self._restore_topmost_on_map = False
+        try:
+            self.root.after_idle(lambda: self.root.attributes("-topmost", True))
+        except tk.TclError:
+            pass
+
+    def open_donation_page(self, event=None):
+        """Open PayPal in the Windows default browser and yield foreground focus."""
+        # Shazampy normally stays above every other window.  Minimize it before
+        # opening the URL so Windows can foreground the user's default browser.
+        try:
+            self.root.attributes("-topmost", False)
+            self._restore_topmost_on_map = True
+            self.root.iconify()
+            self.root.update_idletasks()
+        except tk.TclError:
+            pass
+
+        try:
+            os.startfile(PAYPAL_URL)
+        except (OSError, AttributeError):
+            webbrowser.open_new_tab(PAYPAL_URL)
+        return "break"
 
     # ---------------- Debug ----------------
 
